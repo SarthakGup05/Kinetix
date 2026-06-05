@@ -1,9 +1,9 @@
 /**
  * Kinetix Cyberpunk Color Scheme.
- * Engineered for high-contrast dark interfaces using Deep Void, Surface, and Matrix Green.
+ * Engineered for high-contrast dark interfaces using Deep Void, Surface, and Matrix Green,
+ * with semantic rating alerts for safe-to-dangerous driving metrics.
  */
 export const Colors = {
-  // Light mode (minimal dark-accented style)
   light: {
     text: '#0A0A0F',       // Deep Void
     background: '#FAFAFA', 
@@ -12,8 +12,12 @@ export const Colors = {
     border: '#E4E4E7',     // Light grey border
     primary: '#1b8a0a',
     muted: '#71717A',
+    // Rating Scales
+    excellent: '#10B981',  // Green
+    good: '#EAB308',       // Yellow
+    fair: '#F97316',       // Orange
+    poor: '#EF4444',       // Red
   },
-  // Dark mode (Futuristic Sci-Fi Cyberpunk)
   dark: {
     text: '#FFFFFF',       // Primary Text
     background: '#0A0A0F', // Deep Void
@@ -22,6 +26,11 @@ export const Colors = {
     border: '#27272A',     // Sleek zinc border
     primary: '#39FF14',    // Matrix Green
     muted: '#A1A1AA',      // Muted zinc grey
+    // Rating Scales
+    excellent: '#10B981',  // Green
+    good: '#EAB308',       // Yellow
+    fair: '#F97316',       // Orange
+    poor: '#EF4444',       // Red
   },
 };
 

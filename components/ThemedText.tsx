@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, type TextProps, StyleSheet } from 'react-native';
+import { Text, type TextProps, StyleSheet, Platform } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 export type ThemedTextProps = TextProps & {
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   mono: {
-    fontFamily: 'Platform' === 'ios' ? 'Courier' : 'monospace',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     letterSpacing: 0.5,
   },
   muted: {

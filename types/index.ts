@@ -1,4 +1,19 @@
 /**
- * Global TypeScript type definitions.
+ * Global TypeScript definitions for the Kinetix application.
  */
-export type PlaceholderType = Record<string, unknown>;
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl?: string;
+  vehicleBrand?: string;
+  vehicleModel?: string;
+  createdAt: string;
+}
+
+export interface TelemetryMetric {
+  label: string;
+  value: string;
+  active?: boolean;
+}
