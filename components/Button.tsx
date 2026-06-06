@@ -9,19 +9,16 @@ export interface ButtonProps {
 }
 
 export function Button({ onPress, title, style }: ButtonProps) {
-  const tintColor = useThemeColor({}, 'tint');
-  
   return (
     <Pressable 
       onPress={onPress} 
       style={({ pressed }) => [
         styles.button, 
-        { borderColor: tintColor }, 
         pressed && styles.pressed,
         style
       ]}
     >
-      <Text style={[styles.text, { color: tintColor }]}>{title}</Text>
+      <Text style={styles.text}>{title}</Text>
     </Pressable>
   );
 }
@@ -34,13 +31,15 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'transparent',
+    backgroundColor: '#D4D4D4',
+    borderColor: '#D4D4D4',
   },
   text: {
     fontWeight: '700',
     fontSize: 14,
     textTransform: 'uppercase',
     letterSpacing: 1.5,
+    color: '#000000',
   },
   pressed: {
     opacity: 0.7,

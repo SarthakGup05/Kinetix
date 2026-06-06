@@ -31,8 +31,8 @@ export function OnboardingScreen() {
   const slideAnim = useRef(new Animated.Value(20)).current;
 
   const totalSteps = 4;
-  const matrixGreen = '#10B981';     // Emerald Green
-  const backgroundColor = '#0F172A'; // Slate 900
+  const matrixGreen = '#D4D4D4';     // Light Grey
+  const backgroundColor = '#000000'; // Pure Black
   const hapticsEnabled = settingsManager.getSettings().hapticsEnabled;
 
   useEffect(() => {
@@ -204,7 +204,7 @@ export function OnboardingScreen() {
             {/* Action button (Matrix Green background, black text) */}
             <Pressable 
               onPress={handleNext} 
-              style={[styles.nextButton, { backgroundColor: matrixGreen }]}
+              style={[styles.nextButton, { backgroundColor: '#D4D4D4' }]}
             >
               <Text style={styles.nextButtonText}>
                 {activeStep === totalSteps - 1 ? 'START ENGINE' : 'NEXT'}

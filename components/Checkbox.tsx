@@ -9,7 +9,7 @@ interface CheckboxProps {
 }
 
 export function Checkbox({ checked, onValueChange, label }: CheckboxProps) {
-  const matrixGreen = '#39FF14';
+  const matrixGreen = '#D4D4D4';
 
   return (
     <Pressable 

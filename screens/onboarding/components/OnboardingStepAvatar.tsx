@@ -26,9 +26,9 @@ export function OnboardingStepAvatar({
   onSelectAvatar,
   hapticsEnabled = true,
 }: OnboardingStepAvatarProps) {
-  const cardColor = '#1E293B';       // Slate 800
-  const borderColor = '#334155';     // Slate 700
-  const matrixGreen = '#10B981';     // Emerald Green
+  const cardColor = '#18181B';       // Zinc 900
+  const borderColor = '#27272A';     // Zinc 800
+  const matrixGreen = '#D4D4D4';     // Light Grey
 
   const handleSelect = async (char: string) => {
     if (hapticsEnabled) {

@@ -3,9 +3,19 @@ import { View, StyleSheet, ScrollView, ActivityIndicator, Pressable, TextInput }
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { ThemedText } from '@/components/ThemedText';
 import { Checkbox } from '@/components/Checkbox';
 import { db } from '@/services/db';
+import { settingsManager } from '@/services/settingsManager';
+
+const haptic = {
+  light: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {}),
+  medium: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {}),
+  success: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {}),
+  error: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {}),
+  warning: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {}),
+};
 
 // Auth module subcomponents
 import { AuthBrandingHeader } from './components/AuthBrandingHeader';
@@ -34,10 +44,10 @@ export function AuthScreen() {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
-  const backgroundColor = '#0F172A'; // Slate 900
-  const cardColor = '#1E293B';       // Slate 800
-  const borderColor = '#334155';     // Slate 700
-  const matrixGreen = '#10B981';     // Emerald Green
+  const backgroundColor = '#000000'; // Pure Black
+  const cardColor = '#18181B';       // Zinc 900
+  const borderColor = '#27272A';     // Zinc 800
+  const matrixGreen = '#D4D4D4';     // Light Grey
 
   const validate = () => {
     let isValid = true;
@@ -61,28 +71,37 @@ export function AuthScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!validate()) return;
+    if (!validate()) {
+      haptic.error();   // shake feedback on validation fail
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
+    haptic.medium();    // confirm press
 
     try {
       if (isLogin) {
         const result = await db.login(email, password);
         if (result.success) {
+          haptic.success();
           router.replace('/');
         } else {
+          haptic.error();
           setError(result.error || 'Invalid credentials');
         }
       } else {
         const result = await db.register(name, email, password);
         if (result.success) {
+          haptic.success();
           router.replace('/');
         } else {
+          haptic.error();
           setError(result.error || 'Registration failed');
         }
       }
     } catch (err) {
+      haptic.error();
       setError('Connection error. Please try again.');
     } finally {
       setIsLoading(false);
@@ -107,7 +126,7 @@ export function AuthScreen() {
         </View>
 
         {/* Segmented Login / Signup Toggle */}
-        <AuthSegmentedTabs isLogin={isLogin} onToggle={(val) => { setIsLogin(val); setError(null); }} />
+        <AuthSegmentedTabs isLogin={isLogin} onToggle={(val) => { haptic.light(); setIsLogin(val); setError(null); }} />
 
         {/* Error Notification Banner */}
         {error && (
@@ -220,7 +239,7 @@ export function AuthScreen() {
               onPress={handleSubmit}
               style={({ pressed }) => [
                 styles.submitButton, 
-                { backgroundColor: matrixGreen },
+                { backgroundColor: '#D4D4D4' },
                 pressed && styles.pressed
               ]}
             >
@@ -245,7 +264,7 @@ export function AuthScreen() {
           <Text style={styles.footerNormalText}>
             {isLogin ? "Don't have an account? " : "Already have an account? "}
           </Text>
-          <Pressable onPress={() => { setIsLogin(!isLogin); setError(null); }}>
+          <Pressable onPress={() => { haptic.light(); setIsLogin(!isLogin); setError(null); }}>
             <Text style={[styles.footerLinkText, { color: matrixGreen }]}>
               {isLogin ? 'Sign up' : 'Login'}
             </Text>

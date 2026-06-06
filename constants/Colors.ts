@@ -5,12 +5,12 @@
  */
 export const Colors = {
   light: {
-    text: '#0A0A0F',       // Deep Void
-    background: '#FAFAFA', 
-    tint: '#1b8a0a',       // Deep green tint
-    card: '#FFFFFF',       // Clean white card
+    text: '#FFFFFF',       // Primary Text on black background
+    background: '#000000', 
+    tint: '#D4D4D4',       // Light grey tint
+    card: '#18181B',       // Card
     border: '#E4E4E7',     // Light grey border
-    primary: '#1b8a0a',
+    primary: '#D4D4D4',
     muted: '#71717A',
     // Rating Scales
     excellent: '#10B981',  // Green
@@ -20,11 +20,11 @@ export const Colors = {
   },
   dark: {
     text: '#FFFFFF',       // Primary Text
-    background: '#0A0A0F', // Deep Void
-    tint: '#39FF14',       // Matrix Green
+    background: '#000000', // Pure Black
+    tint: '#D4D4D4',       // Light grey tint
     card: '#18181B',       // Surface
     border: '#27272A',     // Sleek zinc border
-    primary: '#39FF14',    // Matrix Green
+    primary: '#D4D4D4',    // Light grey
     muted: '#A1A1AA',      // Muted zinc grey
     // Rating Scales
     excellent: '#10B981',  // Green

@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 
 export function AuthBrandingHeader() {
-  const brandGreen = '#10B981';
+  const brandGreen = '#D4D4D4';
   
   return (
     <View style={styles.brandingHeader}>

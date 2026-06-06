@@ -7,8 +7,8 @@ interface AuthSegmentedTabsProps {
 }
 
 export function AuthSegmentedTabs({ isLogin, onToggle }: AuthSegmentedTabsProps) {
-  const cardColor = '#1E293B';
-  const brandGreen = '#10B981';
+  const cardColor = '#18181B';
+  const brandGreen = '#D4D4D4';
 
   return (
     <View style={[styles.tabContainer, { backgroundColor: cardColor }]}>

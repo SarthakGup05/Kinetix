@@ -6,6 +6,21 @@ import { sensorManager, type SensorData } from './sensorManager';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { db } from './db';
+import { settingsManager } from './settingsManager';
+
+/** Fire haptics only if the user has enabled tactile feedback in settings */
+const haptic = {
+  warning: () => {
+    if (settingsManager.getSettings().hapticsEnabled) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
+    }
+  },
+  error: () => {
+    if (settingsManager.getSettings().hapticsEnabled) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+    }
+  },
+};
 
 export interface DriveEvent {
   id: string;
@@ -167,7 +182,7 @@ export const driveManager = {
           description: 'Harsh phone handling event detected',
         });
         scoreUpdated = true;
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+        haptic.error();
       }
 
       if (scoreUpdated) {

@@ -123,7 +123,7 @@ export function AnimatedSplashScreen({ onComplete }: AnimatedSplashScreenProps) 
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#0F172A', // Slate 900
+    backgroundColor: '#000000', // Pure Black
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 9999,
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     zIndex: 2, 
   },
   iconBackground: {
-    backgroundColor: '#10B981', // Emerald Green
+    backgroundColor: '#D4D4D4', // Light Grey
     width: 96,
     height: 96,
     borderRadius: 48,
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   subtitleText: {
-    color: '#10B981', // Emerald Green for the sub-text
+    color: '#D4D4D4', // Light Grey for the sub-text
     fontSize: 14,
     fontWeight: '600',
     letterSpacing: 2,
