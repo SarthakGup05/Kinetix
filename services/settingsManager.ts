@@ -6,12 +6,16 @@ export interface UserSettings {
   hapticsEnabled: boolean;
   demoModeEnabled: boolean;
   notificationsEnabled: boolean;
+  groqApiKey?: string;
+  groqModel?: string;
 }
 
 const defaultSettings: UserSettings = {
   hapticsEnabled: true,
   demoModeEnabled: false,
   notificationsEnabled: true,
+  groqApiKey: '',
+  groqModel: 'llama-3.3-70b-versatile',
 };
 
 let cachedSettings: UserSettings = { ...defaultSettings };
