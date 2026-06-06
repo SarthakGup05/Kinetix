@@ -26,12 +26,10 @@ interface DashboardTabProps {
   };
   recentDrives: DriveSession[];
   allDrives: DriveSession[];
-  vehicleLinked: boolean;
-  carName: string;
   onStartDrive: () => void;
 }
 
-export function DashboardTab({ userName, stats, recentDrives, allDrives, vehicleLinked, carName, onStartDrive }: DashboardTabProps) {
+export function DashboardTab({ userName, stats, recentDrives, allDrives, onStartDrive }: DashboardTabProps) {
   const router = useRouter();
 
   // Breathing animation for engine start button
@@ -63,20 +61,6 @@ export function DashboardTab({ userName, stats, recentDrives, allDrives, vehicle
     >
       <GreetingsBanner userName={userName} averageScore={stats.averageScore} />
 
-      {/* Vehicle Status Banner */}
-      <View style={[styles.obdBanner, { backgroundColor: cardColor, borderColor }]}>
-        <View style={styles.obdLeft}>
-          <Ionicons 
-            name={vehicleLinked ? 'checkmark-circle' : 'warning-outline'} 
-            size={14} 
-            color={vehicleLinked ? matrixGreen : '#f59e0b'} 
-          />
-          <Text style={[styles.obdText, { color: vehicleLinked ? '#ffffff' : '#f59e0b' }]}>
-            {vehicleLinked ? `CONNECTED: ${carName}` : `NO VEHICLE LINKED`}
-          </Text>
-        </View>
-        <View style={[styles.obdIndicator, { backgroundColor: vehicleLinked ? matrixGreen : '#f59e0b' }]} />
-      </View>
 
       {/* Dual-Ring Score HUD */}
       <RadialHUD score={stats.averageScore} rating={stats.rating} />
@@ -210,31 +194,6 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     paddingBottom: 110,
     gap: 18,
-  },
-  obdBanner: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-  },
-  obdLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  obdText: {
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 1,
-    fontFamily: 'monospace',
-  },
-  obdIndicator: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
   },
   driveButtonContainer: {
     alignItems: 'center',

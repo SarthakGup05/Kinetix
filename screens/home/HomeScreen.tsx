@@ -95,14 +95,10 @@ export function HomeScreen() {
     router.replace('/');
   };
 
-  const initials = user?.name 
-    ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) 
-    : 'TP';
+
+
 
   const vehicleLinked = !!(user?.vehicleBrand && user?.vehicleModel);
-  const carName = vehicleLinked 
-    ? `${user.vehicleBrand} ${user.vehicleModel}`.toUpperCase() 
-    : 'NO VEHICLE LINKED';
 
   const backgroundColor = '#000000'; // Pure Black
   const borderColor = '#27272A';     // Sleek zinc border
@@ -112,26 +108,19 @@ export function HomeScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['top', 'left', 'right']}>
       <View style={{ flex: 1, position: 'relative' }}>
         
-        {/* ── Driver & Vehicle Static Header ── */}
+        {/* ── Cyberpunk Telematics Header ── */}
         <View style={styles.headerContainer}>
-          <View style={styles.pilotCard}>
-            <View style={[styles.avatarCircle, { borderColor }]}>
-              {user?.avatarUrl ? (
-                <Text style={{ fontSize: 18 }}>{user.avatarUrl}</Text>
-              ) : (
-                <Text style={styles.avatarText}>{initials}</Text>
-              )}
-            </View>
-            <View>
-              <ThemedText variant="muted" style={styles.welcomeLabel}>ACTIVE DRIVER</ThemedText>
-              <ThemedText style={styles.userName}>{user?.name || 'Test Driver'}</ThemedText>
-            </View>
+          <View style={styles.logoWrapper}>
+            <Text style={styles.brandText}>KINETIX</Text>
           </View>
-          <View style={[styles.headerStatusIndicator, { borderColor: vehicleLinked ? matrixGreen : '#f59e0b' }]}>
-            <Text style={[styles.headerStatusText, { color: vehicleLinked ? matrixGreen : '#f59e0b' }]}>
-              {vehicleLinked ? 'CONNECTED' : 'NO VEHICLE LINKED'}
-            </Text>
-          </View>
+          {vehicleLinked && (
+            <View style={styles.headerVehicleBadge}>
+              <Ionicons name="car-sport" size={12} color="#A1A1AA" style={{ marginRight: 4 }} />
+              <Text style={styles.headerVehicleText}>
+                {`${user.vehicleBrand} ${user.vehicleModel}`.toUpperCase()}
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Tab Subviews */}
@@ -141,8 +130,6 @@ export function HomeScreen() {
             stats={stats}
             recentDrives={recentDrives}
             allDrives={allDrives}
-            vehicleLinked={vehicleLinked}
-            carName={carName}
             onStartDrive={handleStartDrive}
           />
         )}
@@ -320,59 +307,43 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
+    paddingHorizontal: 24,
+    paddingTop: 10,
+    paddingBottom: 12,
+    borderBottomWidth: 1.5,
+    borderBottomColor: '#18181B',
+    backgroundColor: '#000000',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 6,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#18181B',
   },
-  headerStatusIndicator: {
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 12,
-    borderWidth: 1,
-    backgroundColor: 'rgba(24, 24, 27, 0.5)',
-  },
-  headerStatusText: {
-    fontSize: 9,
-    fontWeight: '900',
-    fontFamily: 'monospace',
-    letterSpacing: 0.5,
-  },
-  pilotCard: {
+  logoWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
   },
-  avatarCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    borderWidth: 1.5,
-    backgroundColor: '#18181B',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
-    fontSize: 12,
-    fontWeight: '900',
-    color: '#ffffff',
-    letterSpacing: 0.5,
+  brandText: {
     fontFamily: 'monospace',
-  },
-  welcomeLabel: {
-    fontSize: 8,
-    fontWeight: '800',
-    letterSpacing: 1.2,
-    color: '#71717A',
-  },
-  userName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '900',
     color: '#ffffff',
+    letterSpacing: 3,
+  },
+  headerVehicleBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+    backgroundColor: '#18181B',
+    borderWidth: 1,
+    borderColor: '#27272A',
+  },
+  headerVehicleText: {
+    fontFamily: 'monospace',
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#A1A1AA',
+    letterSpacing: 0.5,
   },
 });
 

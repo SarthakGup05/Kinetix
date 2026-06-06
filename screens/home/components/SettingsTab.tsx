@@ -24,6 +24,7 @@ export function SettingsTab({ onLogout, onSettingsChanged }: SettingsTabProps) {
   const [groqModel, setGroqModel] = useState(settingsManager.getSettings().groqModel || 'llama-3.3-70b-versatile');
   const [saveKeySuccess, setSaveKeySuccess] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [isEditingAi, setIsEditingAi] = useState(false);
 
   const handleToggleHaptics = async (value: boolean) => {
     setHapticsEnabled(value);
@@ -53,6 +54,7 @@ export function SettingsTab({ onLogout, onSettingsChanged }: SettingsTabProps) {
       groqModel: groqModel
     });
     setSaveKeySuccess(true);
+    setIsEditingAi(false);
     if (hapticsEnabled) {
       try {
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -190,66 +192,114 @@ export function SettingsTab({ onLogout, onSettingsChanged }: SettingsTabProps) {
 
       {/* Groq API Config */}
       <Text style={styles.feedHeader}>AI ASSISTANT SETUP</Text>
-      <View style={[styles.profileCard, { backgroundColor: cardColor, borderColor, gap: 14 }]}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>GROQ API KEY</Text>
-          <TextInput
-            style={[styles.textInput, { borderColor }]}
-            value={groqApiKey}
-            onChangeText={setGroqApiKey}
-            placeholder="gsk_..."
-            placeholderTextColor="#52525B"
-            autoCapitalize="none"
-            autoCorrect={false}
-            secureTextEntry={true}
-          />
+      {settingsManager.getSettings().groqApiKey && !isEditingAi ? (
+        <View style={[styles.profileCard, { backgroundColor: cardColor, borderColor, gap: 12 }]}>
+          <View style={styles.apiInfoRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.apiInfoLabel}>GROQ API KEY</Text>
+              <Text style={styles.apiInfoValue}>••••••••••••••••{groqApiKey.slice(-4)}</Text>
+            </View>
+            <View style={styles.verticalDivider} />
+            <View style={{ flex: 1, paddingLeft: 16 }}>
+              <Text style={styles.apiInfoLabel}>ACTIVE MODEL</Text>
+              <Text style={styles.apiInfoValue}>{groqModel.split('-').slice(0, 3).join('-').toUpperCase()}</Text>
+            </View>
+          </View>
+          
+          <Pressable 
+            onPress={() => {
+              if (hapticsEnabled) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+              setIsEditingAi(true);
+            }}
+            style={({ pressed }) => [
+              styles.editBtn,
+              pressed && styles.pressedPill
+            ]}
+          >
+            <Ionicons name="settings-outline" size={14} color="#ffffff" />
+            <Text style={styles.editBtnText}>EDIT AI SETTINGS</Text>
+          </Pressable>
         </View>
+      ) : (
+        <View style={[styles.profileCard, { backgroundColor: cardColor, borderColor, gap: 14 }]}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>GROQ API KEY</Text>
+            <TextInput
+              style={[styles.textInput, { borderColor }]}
+              value={groqApiKey}
+              onChangeText={setGroqApiKey}
+              placeholder="gsk_..."
+              placeholderTextColor="#52525B"
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry={true}
+            />
+          </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>MODEL CHOICE</Text>
-          <View style={styles.modelRow}>
-            {(['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'] as const).map((model) => {
-              const isSelected = groqModel === model;
-              return (
-                <Pressable
-                  key={model}
-                  onPress={async () => {
-                    setGroqModel(model);
-                    if (hapticsEnabled) {
-                      try { await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch {}
-                    }
-                  }}
-                  style={[
-                    styles.modelOptionBtn,
-                    { 
-                      borderColor: isSelected ? matrixGreen : '#27272A',
-                      backgroundColor: isSelected ? 'rgba(212, 212, 212, 0.1)' : 'transparent'
-                    }
-                  ]}
-                >
-                  <Text style={[styles.modelOptionText, { color: isSelected ? '#ffffff' : '#94A3B8' }]}>
-                    {model.split('-').slice(0, 3).join('-')}
-                  </Text>
-                </Pressable>
-              );
-            })}
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>MODEL CHOICE</Text>
+            <View style={styles.modelRow}>
+              {(['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'] as const).map((model) => {
+                const isSelected = groqModel === model;
+                return (
+                  <Pressable
+                    key={model}
+                    onPress={async () => {
+                      setGroqModel(model);
+                      if (hapticsEnabled) {
+                        try { await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch {}
+                      }
+                    }}
+                    style={[
+                      styles.modelOptionBtn,
+                      { 
+                        borderColor: isSelected ? matrixGreen : '#27272A',
+                        backgroundColor: isSelected ? 'rgba(212, 212, 212, 0.1)' : 'transparent'
+                      }
+                    ]}
+                  >
+                    <Text style={[styles.modelOptionText, { color: isSelected ? '#ffffff' : '#94A3B8' }]}>
+                      {model.split('-').slice(0, 3).join('-')}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+
+          {saveKeySuccess ? <Text style={styles.successText}>AI ASSISTANT SETTINGS SAVED</Text> : null}
+
+          <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
+            {settingsManager.getSettings().groqApiKey && (
+              <Pressable 
+                onPress={() => {
+                  if (hapticsEnabled) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+                  setGroqApiKey(settingsManager.getSettings().groqApiKey || '');
+                  setGroqModel(settingsManager.getSettings().groqModel || 'llama-3.3-70b-versatile');
+                  setIsEditingAi(false);
+                }}
+                style={({ pressed }) => [
+                  styles.cancelBtn,
+                  pressed && styles.pressedPill
+                ]}
+              >
+                <Text style={styles.cancelBtnText}>CANCEL</Text>
+              </Pressable>
+            )}
+            <Pressable 
+              onPress={handleSaveGroqSettings}
+              style={({ pressed }) => [
+                styles.saveButton,
+                { backgroundColor: '#D4D4D4', flex: 1, marginTop: 0 },
+                pressed && styles.pressedPill
+              ]}
+            >
+              <Ionicons name="cloud-upload-outline" size={16} color="#000000" />
+              <Text style={styles.saveButtonText}>SAVE AI SETTINGS</Text>
+            </Pressable>
           </View>
         </View>
-
-        {saveKeySuccess ? <Text style={styles.successText}>AI ASSISTANT SETTINGS SAVED</Text> : null}
-
-        <Pressable 
-          onPress={handleSaveGroqSettings}
-          style={({ pressed }) => [
-            styles.saveButton,
-            { backgroundColor: '#D4D4D4' },
-            pressed && styles.pressedPill
-          ]}
-        >
-          <Ionicons name="cloud-upload-outline" size={16} color="#000000" />
-          <Text style={styles.saveButtonText}>SAVE AI SETTINGS</Text>
-        </Pressable>
-      </View>
+      )}
 
       {/* App Info */}
       <Text style={styles.feedHeader}>APPLICATION</Text>
@@ -467,5 +517,62 @@ const styles = StyleSheet.create({
   pressedPill: {
     opacity: 0.85,
     transform: [{ scale: 0.98 }],
+  },
+  apiInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  apiInfoLabel: {
+    fontSize: 8,
+    color: '#94A3B8',
+    fontWeight: '800',
+    letterSpacing: 1,
+    fontFamily: 'monospace',
+    marginBottom: 2,
+  },
+  apiInfoValue: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#ffffff',
+  },
+  verticalDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: '#27272A',
+  },
+  editBtn: {
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: '#27272A',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 6,
+  },
+  editBtnText: {
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 1,
+    fontFamily: 'monospace',
+  },
+  cancelBtn: {
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1.5,
+    borderColor: '#27272A',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  cancelBtnText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 1,
+    fontFamily: 'monospace',
   },
 });

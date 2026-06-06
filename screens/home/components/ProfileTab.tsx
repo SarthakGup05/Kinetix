@@ -34,6 +34,7 @@ export function ProfileTab({ user, stats, onUserUpdated }: ProfileTabProps) {
   const [profileSuccess, setProfileSuccess] = useState(false);
   const [profileError, setProfileError] = useState('');
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isEditingVehicle, setIsEditingVehicle] = useState(false);
 
   const hapticsEnabled = settingsManager.getSettings().hapticsEnabled;
 
@@ -62,6 +63,7 @@ export function ProfileTab({ user, stats, onUserUpdated }: ProfileTabProps) {
     db.updateUserVehicle(editBrand, editModel);
     onUserUpdated();
     setSaveSuccess(true);
+    setIsEditingVehicle(false);
     if (hapticsEnabled) {
       try {
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -207,52 +209,100 @@ export function ProfileTab({ user, stats, onUserUpdated }: ProfileTabProps) {
 
       {/* Garage Setup Form */}
       <Text style={styles.feedHeader}>VEHICLE DETAILS</Text>
-      <View style={[styles.profileCard, { backgroundColor: cardColor, borderColor }]}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>VEHICLE BRAND</Text>
-          <TextInput
-            style={[styles.textInput, { borderColor }]}
-            value={editBrand}
-            onChangeText={(text) => {
-              setEditBrand(text);
-              setFormError('');
+      {user?.vehicleBrand && user?.vehicleModel && !isEditingVehicle ? (
+        <View style={[styles.profileCard, { backgroundColor: cardColor, borderColor, gap: 12 }]}>
+          <View style={styles.vehicleInfoRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.vehicleInfoLabel}>BRAND</Text>
+              <Text style={styles.vehicleInfoValue}>{user.vehicleBrand.toUpperCase()}</Text>
+            </View>
+            <View style={styles.vehicleInfoDivider} />
+            <View style={{ flex: 1, paddingLeft: 16 }}>
+              <Text style={styles.vehicleInfoLabel}>MODEL</Text>
+              <Text style={styles.vehicleInfoValue}>{user.vehicleModel.toUpperCase()}</Text>
+            </View>
+          </View>
+          
+          <Pressable 
+            onPress={() => {
+              if (hapticsEnabled) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+              setIsEditingVehicle(true);
             }}
-            placeholder="e.g. Porsche, Tesla"
-            placeholderTextColor="#52525B"
-            autoCapitalize="words"
-          />
+            style={({ pressed }) => [
+              styles.editVehicleBtn,
+              pressed && styles.pressedPill
+            ]}
+          >
+            <Ionicons name="pencil-outline" size={14} color="#ffffff" />
+            <Text style={styles.editVehicleBtnText}>EDIT VEHICLE</Text>
+          </Pressable>
         </View>
+      ) : (
+        <View style={[styles.profileCard, { backgroundColor: cardColor, borderColor }]}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>VEHICLE BRAND</Text>
+            <TextInput
+              style={[styles.textInput, { borderColor }]}
+              value={editBrand}
+              onChangeText={(text) => {
+                setEditBrand(text);
+                setFormError('');
+              }}
+              placeholder="e.g. Porsche, Tesla"
+              placeholderTextColor="#52525B"
+              autoCapitalize="words"
+            />
+          </View>
 
-        <View style={[styles.inputGroup, { marginTop: 14 }]}>
-          <Text style={styles.inputLabel}>VEHICLE MODEL</Text>
-          <TextInput
-            style={[styles.textInput, { borderColor }]}
-            value={editModel}
-            onChangeText={(text) => {
-              setEditModel(text);
-              setFormError('');
-            }}
-            placeholder="e.g. 911 GT3, Model 3"
-            placeholderTextColor="#52525B"
-            autoCapitalize="words"
-          />
+          <View style={[styles.inputGroup, { marginTop: 14 }]}>
+            <Text style={styles.inputLabel}>VEHICLE MODEL</Text>
+            <TextInput
+              style={[styles.textInput, { borderColor }]}
+              value={editModel}
+              onChangeText={(text) => {
+                setEditModel(text);
+                setFormError('');
+              }}
+              placeholder="e.g. 911 GT3, Model 3"
+              placeholderTextColor="#52525B"
+              autoCapitalize="words"
+            />
+          </View>
+
+          {formError ? <Text style={styles.errorText}>{formError}</Text> : null}
+          {saveSuccess ? <Text style={styles.successText}>VEHICLE DETAILS SAVED</Text> : null}
+
+          <View style={{ flexDirection: 'row', gap: 10, marginTop: 18 }}>
+            {user?.vehicleBrand && user?.vehicleModel && (
+              <Pressable 
+                onPress={() => {
+                  if (hapticsEnabled) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+                  setEditBrand(user.vehicleBrand || '');
+                  setEditModel(user.vehicleModel || '');
+                  setIsEditingVehicle(false);
+                }}
+                style={({ pressed }) => [
+                  styles.cancelBtn,
+                  pressed && styles.pressedPill
+                ]}
+              >
+                <Text style={styles.cancelBtnText}>CANCEL</Text>
+              </Pressable>
+            )}
+            <Pressable 
+              onPress={handleSaveVehicle}
+              style={({ pressed }) => [
+                styles.saveButton,
+                { backgroundColor: '#D4D4D4', flex: 1, marginTop: 0 },
+                pressed && styles.pressedPill
+              ]}
+            >
+              <Ionicons name="save-outline" size={16} color="#000000" />
+              <Text style={styles.saveButtonText}>SAVE VEHICLE</Text>
+            </Pressable>
+          </View>
         </View>
-
-        {formError ? <Text style={styles.errorText}>{formError}</Text> : null}
-        {saveSuccess ? <Text style={styles.successText}>VEHICLE DETAILS SAVED</Text> : null}
-
-        <Pressable 
-          onPress={handleSaveVehicle}
-          style={({ pressed }) => [
-            styles.saveButton,
-            { backgroundColor: '#D4D4D4' },
-            pressed && styles.pressedPill
-          ]}
-        >
-          <Ionicons name="save-outline" size={16} color="#000000" />
-          <Text style={styles.saveButtonText}>SAVE VEHICLE</Text>
-        </Pressable>
-      </View>
+      )}
 
       {/* Driver Achievements / Badges Grid */}
       <Text style={styles.feedHeader}>DRIVER ACHIEVEMENTS</Text>
@@ -555,5 +605,62 @@ const styles = StyleSheet.create({
     color: '#71717A',
     fontFamily: 'monospace',
     fontWeight: '700',
+  },
+  vehicleInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  vehicleInfoLabel: {
+    fontSize: 8,
+    color: '#94A3B8',
+    fontWeight: '800',
+    letterSpacing: 1,
+    fontFamily: 'monospace',
+    marginBottom: 2,
+  },
+  vehicleInfoValue: {
+    fontSize: 14,
+    fontWeight: '900',
+    color: '#ffffff',
+  },
+  vehicleInfoDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: '#27272A',
+  },
+  editVehicleBtn: {
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: '#27272A',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 6,
+  },
+  editVehicleBtnText: {
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 1,
+    fontFamily: 'monospace',
+  },
+  cancelBtn: {
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1.5,
+    borderColor: '#27272A',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  cancelBtnText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 1,
+    fontFamily: 'monospace',
   },
 });
