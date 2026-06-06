@@ -20,45 +20,32 @@ export default function Index() {
   useEffect(() => {
     async function loadLaunchSettings() {
       try {
-        // Hydrate local database session & registry, and load settings
-        await Promise.all([
-          db.init(),
-          settingsManager.init(),
-        ]);
+        // 1. Hydrate local database session & registry first
+        await db.init();
+
+        // 2. Load user-specific settings if a user is logged in
+        const currentUser = db.getCurrentUser();
+        await settingsManager.init(currentUser?.id);
         
-        // Hydrate user specific drive logs history
+        // 3. Hydrate user specific drive logs history
         await driveManager.init();
 
-        // ── KEY FIX: If the user is already authenticated (session restored from
-        // disk), they must have completed onboarding in a previous session.
-        // Skip showing onboarding again for returning users.
-        if (db.isAuthenticated()) {
-          launchManager.setOnboardingStatus(true);
-          // Persist so future restarts also skip it
-          await AsyncStorage.setItem(HAS_COMPLETED_ONBOARDING_KEY, 'true');
-        }
+        // ── KEY FIX: Check onboarding status directly from the user profile database record
+        const userCompletedOnboarding = db.isAuthenticated() && !!currentUser?.hasCompletedOnboarding;
         
-        // Sync state from internal cache
-        setHasCompletedOnboarding(launchManager.getOnboardingStatus());
+        launchManager.setOnboardingStatus(userCompletedOnboarding);
+        setHasCompletedOnboarding(userCompletedOnboarding);
 
-        // If already cached in memory, skip reading from storage
-        if (launchManager.getShownSplashStatus() && launchManager.getOnboardingStatus()) {
+        // Skip reading splash status from disk if already cached in memory
+        if (launchManager.getShownSplashStatus()) {
           setIsLoading(false);
           return;
         }
 
-        const [splashVal, onboardingVal] = await Promise.all([
-          AsyncStorage.getItem(HAS_SHOWN_SPLASH_KEY),
-          AsyncStorage.getItem(HAS_COMPLETED_ONBOARDING_KEY)
-        ]);
-
+        const splashVal = await AsyncStorage.getItem(HAS_SHOWN_SPLASH_KEY);
         if (splashVal === 'true') {
           launchManager.setShownSplashStatus(true);
           setHasShownSplash(true);
-        }
-        if (onboardingVal === 'true') {
-          launchManager.setOnboardingStatus(true);
-          setHasCompletedOnboarding(true);
         }
       } catch (e) {
         console.error('[Index] Failed to retrieve launch settings', e);

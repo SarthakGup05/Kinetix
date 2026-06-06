@@ -10,6 +10,7 @@ export interface User {
   vehicleBrand?: string;
   vehicleModel?: string;
   createdAt: string;
+  hasCompletedOnboarding?: boolean;
 }
 
 export interface TelemetryMetric {

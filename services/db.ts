@@ -15,6 +15,7 @@ const defaultUser: User = {
   createdAt: new Date().toISOString(),
   vehicleBrand: 'Porsche',
   vehicleModel: 'Taycan',
+  hasCompletedOnboarding: true,
 };
 
 const usersTable = new Map<string, { user: User; passwordHash: string }>();
@@ -156,11 +157,13 @@ export const db = {
     if (currentSessionUser) {
       currentSessionUser.vehicleBrand = brand.trim();
       currentSessionUser.vehicleModel = model.trim();
+      currentSessionUser.hasCompletedOnboarding = true;
 
       const entry = usersTable.get(currentSessionUser.email.toLowerCase());
       if (entry) {
         entry.user.vehicleBrand = brand.trim();
         entry.user.vehicleModel = model.trim();
+        entry.user.hasCompletedOnboarding = true;
         this.saveRegistryToDisk(); // Save registry updates in background
       }
 

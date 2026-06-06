@@ -19,11 +19,14 @@ const defaultSettings: UserSettings = {
 };
 
 let cachedSettings: UserSettings = { ...defaultSettings };
+let activeUserId: string | null = null;
 
 export const settingsManager = {
-  async init(): Promise<UserSettings> {
+  async init(userId?: string): Promise<UserSettings> {
+    activeUserId = userId || null;
+    const key = userId ? `${SETTINGS_KEY}_${userId}` : SETTINGS_KEY;
     try {
-      const stored = await AsyncStorage.getItem(SETTINGS_KEY);
+      const stored = await AsyncStorage.getItem(key);
       if (stored) {
         cachedSettings = { ...defaultSettings, ...JSON.parse(stored) };
       } else {
@@ -41,8 +44,9 @@ export const settingsManager = {
 
   async updateSettings(updates: Partial<UserSettings>): Promise<UserSettings> {
     cachedSettings = { ...cachedSettings, ...updates };
+    const key = activeUserId ? `${SETTINGS_KEY}_${activeUserId}` : SETTINGS_KEY;
     try {
-      await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(cachedSettings));
+      await AsyncStorage.setItem(key, JSON.stringify(cachedSettings));
     } catch (e) {
       console.error('[SettingsManager] Failed to save settings', e);
     }
